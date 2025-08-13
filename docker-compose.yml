@@ -1,0 +1,12 @@
+version: '3'
+services:
+  airflow:
+    image: apache/airflow:2.6.3
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./data:/data
+    ports:
+      - "8080:8080"
+    command: standalone
