@@ -1,20 +1,28 @@
 from datetime import datetime
-from airflow.models import DAG
-from airflow.operators.python import PythonOperator  # Absolute import path
+from airflow import DAG
+from airflow.operators.python import PythonOperator
 import pandas as pd
+import os
 
-def process_data():
-    df = pd.DataFrame({'test': [1, 2, 3]})
-    print(df)
+def extract_transform():
+    # Paths relative to project root
+    input_path = '/opt/airflow/project/data.csv'  # Uses root data.csv
+    output_path = '/opt/airflow/project/outputs/processed_data.csv'
+    
+    print(f"Reading from: {input_path}")
+    print(f"Files in directory: {os.listdir('/opt/airflow/project')}")
+    
+    data = pd.read_csv(input_path)
+    data[data["price"] > 1.00].to_csv(output_path, index=False)
+    print(f"Saved to {output_path}")
 
 with DAG(
-    dag_id='debug_dag',
+    'etl_pipeline',
     start_date=datetime(2024, 1, 1),
-    schedule=None,
-    catchup=False
+    schedule_interval=None,
 ) as dag:
     
-    test_task = PythonOperator(
-        task_id='test_task',
-        python_callable=process_data
+    PythonOperator(
+        task_id='transform_data',
+        python_callable=extract_transform,
     )

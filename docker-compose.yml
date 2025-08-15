@@ -2,11 +2,17 @@ version: '3'
 services:
   airflow:
     image: apache/airflow:2.6.3
+    user: "0:0"  # Run as root to avoid permission issues
+    volumes:
+      - ./:/opt/airflow/project  # Mount entire project
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./data:/data
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/project/airflow/dags  # Explicit DAGs path
     ports:
       - "8080:8080"
-    command: standalone
+    command: >
+      bash -c "
+        mkdir -p /opt/airflow/project/outputs &&
+        chown -R airflow:root /opt/airflow/project &&
+        airflow standalone
+      "
