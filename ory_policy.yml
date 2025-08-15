@@ -1,0 +1,14 @@
+resources:
+  - name: my-project-bucket
+    actions:
+      - s3:GetObject
+    effect: allow
+    subjects:
+      - user:devops1
+
+  - name: my-project-bucket
+    actions:
+      - s3:*
+    effect: deny
+    subjects:
+      - user:devops2
